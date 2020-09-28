@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 11
  * @author wangye
  * @classname DataReplicationAutoConfiguration
  * @date 2020/9/25 15:39
