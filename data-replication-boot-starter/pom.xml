@@ -4,18 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>data-replication</artifactId>
-        <groupId>groupId</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>com.rep</groupId>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.rep</groupId>
     <artifactId>data-replication-boot-starter</artifactId>
+    <version>1.0</version>
+    <name>data-replication-boot-starter</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>groupId</groupId>
+            <groupId>com.rep</groupId>
             <artifactId>data-replication-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
