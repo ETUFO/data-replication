@@ -118,6 +118,7 @@
                     <include>**/*.tld</include>
                     <include>**/*.ftl</include>
                     <include>**/banner.txt</include>
+                    <include>**/spring.factories</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

@@ -22,6 +22,18 @@ public class Table implements Serializable {
     @XmlAttribute(name = "table-name")
     private String tableName;
 
+    //查询字段
+    @XmlAttribute(name = "query-field")
+    private String queryField;
+
+    //查询参数名
+    @XmlAttribute(name = "param-name")
+    private String paramName;
+
+    //实体类
+    @XmlAttribute(name = "entity-class")
+    private String entityClass;
+
     //当前模块所依赖的模块
     @XmlElement(name="depend-table")
     private List<DependTable> dependTables;
@@ -42,5 +54,32 @@ public class Table implements Serializable {
 
     public void setDependTables(List<DependTable> dependTables) {
         this.dependTables = dependTables;
+    }
+
+    @XmlTransient
+    public String getQueryField() {
+        return queryField;
+    }
+
+    public void setQueryField(String queryField) {
+        this.queryField = queryField;
+    }
+
+    @XmlTransient
+    public String getParamName() {
+        return paramName;
+    }
+
+    public void setParamName(String paramName) {
+        this.paramName = paramName;
+    }
+
+    @XmlTransient
+    public String getEntityClass() {
+        return entityClass;
+    }
+
+    public void setEntityClass(String entityClass) {
+        this.entityClass = entityClass;
     }
 }

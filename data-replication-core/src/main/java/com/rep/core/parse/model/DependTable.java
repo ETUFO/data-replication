@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * 被依赖模块
+ *
  * @author wangye
  * @classname CidsCourseMoule
  * @date 2020/9/9 15:46
@@ -19,9 +20,14 @@ public class DependTable implements Serializable {
     //设计模块对应的表名
     @XmlAttribute(name = "table-name")
     private String tableName;
+
     //依赖当前模块的关联字段
     @XmlAttribute(name = "source-field")
     private String sourceField;
+
+    //被依赖表的关联字段
+    @XmlAttribute(name = "target-field")
+    private String targetField;
 
     @XmlTransient
     public String getTableName() {
@@ -41,4 +47,12 @@ public class DependTable implements Serializable {
         this.sourceField = sourceField;
     }
 
+    @XmlTransient
+    public String getTargetField() {
+        return targetField;
+    }
+
+    public void setTargetField(String targetField) {
+        this.targetField = targetField;
+    }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rep.core.mapper.DataReplicationMapper">
+
+    <select id="selectList" resultType="Map">
+        select * from ${tableName} where ${paramName}
+        <choose>
+            <when test="paramList.size == 0">
+                 = #{paramList}[0]
+            </when>
+            <when test="paramList.size > 0">
+                in
+                <foreach collection="paramList" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+        </choose>
+    </select>
+</mapper>
