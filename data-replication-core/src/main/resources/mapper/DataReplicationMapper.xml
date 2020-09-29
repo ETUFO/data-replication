@@ -5,10 +5,10 @@
     <select id="selectList" resultType="Map">
         select * from ${tableName} where ${paramName}
         <choose>
-            <when test="paramList.size == 0">
-                 = #{paramList}[0]
+            <when test="paramList.size == 1">
+                 = #{paramList[0]}
             </when>
-            <when test="paramList.size > 0">
+            <when test="paramList.size > 1">
                 in
                 <foreach collection="paramList" item="item" open="(" separator="," close=")">
                     #{item}

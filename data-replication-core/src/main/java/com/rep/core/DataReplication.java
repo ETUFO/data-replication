@@ -1,24 +1,14 @@
 package com.rep.core;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import com.google.common.base.CaseFormat;
-import com.google.common.collect.Maps;
-import com.rep.core.exception.NotConditionException;
-import com.rep.core.mapper.DataReplicationMapper;
 import com.rep.core.parse.ReplicationParse;
-import com.rep.core.parse.model.DependTable;
-import com.rep.core.parse.model.Table;
-import com.rep.core.parse.model.Tables;
-import org.apache.commons.lang3.StringUtils;
+import com.rep.core.query.DataQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +24,7 @@ public class DataReplication {
 
     private final static Map<String,Class> ENTITY_CLASS_MAP = new ConcurrentHashMap<>();
     @Autowired
-    private DataReplicationMapper mapper;
+    private DataQuery dataQuery;
 
     public DataReplication(ReplicationParse parse){
         this.parse = parse;
@@ -50,8 +40,7 @@ public class DataReplication {
 //
 //      SqlHelper.table(Object).getCurrentNamespace()
         //TODO 查询数据
-
-
+        Map<String, List<Map>> oldDataMap = dataQuery.queryData(param, parse.tables);
 
 
         //TODO 替换数据

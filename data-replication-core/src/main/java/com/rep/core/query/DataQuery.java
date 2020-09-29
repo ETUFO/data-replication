@@ -1,4 +1,4 @@
-package com.rep.core;
+package com.rep.core.query;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Maps;
@@ -48,7 +48,7 @@ public class DataQuery {
                     if (paramValue instanceof Collection) {
                         List paramList = new ArrayList((Collection) paramValue);
                         datas = replicationMapper.selectList(table.getTableName(), table.getQueryField(), paramList);
-                    } else if (paramValue.getClass().isPrimitive()) {
+                    } else if (paramValue.getClass().isPrimitive() || paramValue instanceof String) {
                         datas = replicationMapper.selectList(table.getTableName(), table.getQueryField(), Arrays.asList(paramValue));
                     } else {
                         throw new ParamTypeException(String.format("参数类型只支持集合与基本类型，tableName：%s，paramName：%s", table.getTableName(), paramName));
@@ -58,11 +58,11 @@ public class DataQuery {
                     if (CollectionUtil.isNotEmpty(dependTables)) {
                         DependTable dependTable = dependTables.get(0);
                         List<Map> refDataList = dataContainer.get(dependTable.getTableName());
-                        if(CollectionUtil.isNotEmpty(refDataList)){
+                        if (CollectionUtil.isNotEmpty(refDataList)) {
                             String targetField = dependTable.getTargetField();
                             List<Object> refFieldList = refDataList.stream().map(m -> m.get(targetField)).collect(Collectors.toList());
                             datas = replicationMapper.selectList(table.getTableName(), dependTable.getSourceField(), refFieldList);
-                        }else{
+                        } else {
                             continue;
                         }
                     } else {
@@ -78,7 +78,7 @@ public class DataQuery {
                 }
             }
 
-        } while (oldCompletedCount != completedCount);
+        } while (completedCount < tableList.size() && oldCompletedCount != completedCount);
         return dataContainer;
     }
 }
