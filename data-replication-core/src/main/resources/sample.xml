@@ -10,13 +10,20 @@
     -->
     <table table-name="cids_course" query-field="id" param-name="course-id" entity-class=""/>
 
-    <!--
-       depend-table:关联表标签，配置关联关系表示需要替换关联字段，如果不需要替换关联字段值则不需要配置
-       table-name:关联表名称
-       source-field：table标签中表的关联字段，按照表中的字段名称配置
-       target-field：depend-table标签中表的关联字段，注意属性名称配置按照返回数据命名规则配置（例如表中user_name,返回userName，则配置userName）
-    -->
+
     <table table-name="cids_course_team">
+        <!--
+            rep-field：根据定制策略替换字段值
+            field-name：字段名称
+            rep-strategy：替换策略，配置实现RepField接口类bean实例的名称
+        -->
+        <rep-field field-name=""  rep-field-strategy=""/>
+        <!--
+          depend-table:关联表标签，配置关联关系表示需要替换关联字段，如果不需要替换关联字段值则不需要配置
+          table-name:关联表名称
+          source-field：table标签中表的关联字段，按照表中的字段名称配置
+          target-field：depend-table标签中表的关联字段，注意属性名称配置按照返回数据命名规则配置（例如表中user_name,返回userName，则配置userName）
+       -->
         <depend-table table-name="cids_course" source-field="course_id" target-field="id"/>
     </table>
 </tables>

@@ -38,6 +38,10 @@ public class Table implements Serializable {
     @XmlElement(name="depend-table")
     private List<DependTable> dependTables;
 
+    //当前模块所依赖的模块
+    @XmlElement(name="rep-field")
+    private List<RepField> repFields;
+
     @XmlTransient
     public String getTableName() {
         return tableName;
@@ -77,6 +81,15 @@ public class Table implements Serializable {
     @XmlTransient
     public String getEntityClass() {
         return entityClass;
+    }
+
+    @XmlTransient
+    public List<RepField> getRepFields() {
+        return repFields;
+    }
+
+    public void setRepFields(List<RepField> repFields) {
+        this.repFields = repFields;
     }
 
     public void setEntityClass(String entityClass) {

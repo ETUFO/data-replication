@@ -1,5 +1,6 @@
 package com.rep.core;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.google.common.base.CaseFormat;
@@ -39,12 +40,10 @@ public class DataReplication {
     public void copy(Map<String,Object> param){
 //
 //      SqlHelper.table(Object).getCurrentNamespace()
-        //TODO 查询数据
+        //查询要复制的数据
         Map<String, List<Map>> oldDataMap = dataQuery.queryData(param, parse.tables);
+        //TODO 替换关联关系字段并根据配置策略替换数据
 
-
-        //TODO 替换数据
-        //TODO 根据配置获取或接口获取实体Class对象
         //TODO 对外开发接口个性化修改数据
         //TODO 生成insert语句
         //TODO 保存数据
