@@ -1,11 +1,11 @@
 package com.rep.core;
 
-import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.google.common.base.CaseFormat;
 import com.rep.core.parse.ReplicationParse;
 import com.rep.core.query.DataQuery;
+import com.rep.core.rep.RepFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -23,27 +23,30 @@ public class DataReplication {
 
     private ReplicationParse parse;
 
-    private final static Map<String,Class> ENTITY_CLASS_MAP = new ConcurrentHashMap<>();
+    private final static Map<String, Class> ENTITY_CLASS_MAP = new ConcurrentHashMap<>();
     @Autowired
     private DataQuery dataQuery;
+    @Autowired
+    private RepFieldService repFieldService;
 
-    public DataReplication(ReplicationParse parse){
+    public DataReplication(ReplicationParse parse) {
         this.parse = parse;
     }
 
     /**
      * 数据复制，替换表之间关联字段数据
+     *
+     * @param param
      * @auther wangye
      * @date 2020/9/29
-     * @param param
      */
-    public void copy(Map<String,Object> param){
+    public void copy(Map<String, Object> param) {
 //
 //      SqlHelper.table(Object).getCurrentNamespace()
         //查询要复制的数据
-        Map<String, List<Map>> oldDataMap = dataQuery.queryData(param, parse.tables);
-        //TODO 替换关联关系字段并根据配置策略替换数据
-
+        Map<String, List<Map>> dataMap = dataQuery.queryData(param, parse.tables);
+        //替换关联关系字段并根据配置策略替换指定字段
+        repFieldService.replace(dataMap, parse.tables);
         //TODO 对外开发接口个性化修改数据
         //TODO 生成insert语句
         //TODO 保存数据
@@ -74,10 +77,10 @@ public class DataReplication {
             insertColumnBuilder.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName)).append(",");
             itemColumnBuilder.append("#{item." + fieldName + "},");
         }
-        if(insertColumnBuilder.charAt(insertColumnBuilder.length() - 1) == ','){
+        if (insertColumnBuilder.charAt(insertColumnBuilder.length() - 1) == ',') {
             insertColumnBuilder.deleteCharAt(insertColumnBuilder.length() - 1);
         }
-        if(itemColumnBuilder.charAt(itemColumnBuilder.length() - 1) == ','){
+        if (itemColumnBuilder.charAt(itemColumnBuilder.length() - 1) == ',') {
             itemColumnBuilder.deleteCharAt(itemColumnBuilder.length() - 1);
         }
         String foreachSql = "values" +

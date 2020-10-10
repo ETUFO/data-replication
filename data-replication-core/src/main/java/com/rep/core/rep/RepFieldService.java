@@ -29,44 +29,61 @@ import java.util.Set;
 @Component
 public class RepFieldService {
 
-    public void repFields(Map<String, List<Map>> dataMap, Tables tables) {
+    public void replace(Map<String, List<Map>> dataMap, Tables tables) {
         //{tableName:{fieldName:{oldValue:newValue}},.......}
-        Map<String, Map<String, Map<String, String>>> fieldValueCorrespondingMap = Maps.newHashMap();
+        Map<String, Map<String, Map<Object, Object>>> fieldValueCorrespondingMap = Maps.newHashMap();
         Set<String> completedTableSet = Sets.newHashSetWithExpectedSize(tables.getTables().size());
         int count = 0;
         do {
             count = completedTableSet.size();
             for (Table table : tables.getTables()) {
-                List<DependTable> dependTables = table.getDependTables();
+                if (completedTableSet.contains(table.getTableName())) {
+                    continue;
+                }
+                List<DependTable> dependTables = Optional.ofNullable(table.getDependTables()).map(d -> d).orElse(Lists.newArrayList());
                 //检查依赖表中数据是否已替换
                 if (!checkDependTableIsReplaced(fieldValueCorrespondingMap, dependTables)) {
                     continue;
                 }
                 //拼接要替换的关联字段数据 {sourceFieldName:{oldFieldValue:newFieldValue},...}
-                Map<String,Map<String,String>> sourceFieldMap = Maps.newHashMap();
+                Map<String, Map<Object, Object>> sourceFieldMap = Maps.newHashMap();
                 for (DependTable dependTable : dependTables) {
-                    Map<String, String> fieldValueMap = Optional.ofNullable(fieldValueCorrespondingMap
-                            .get(dependTable.getTableName())).map(m->m.get(dependTable.getTargetField())).orElse(null);
-                    sourceFieldMap.put(dependTable.getSourceField(),fieldValueMap);
+                    Map<Object, Object> fieldValueMap = Optional.ofNullable(fieldValueCorrespondingMap
+                            .get(dependTable.getTableName())).map(m -> m.get(dependTable.getTargetField())).orElse(null);
+                    sourceFieldMap.put(dependTable.getSourceField(), fieldValueMap);
                 }
                 List<Map> dataList = dataMap.get(table.getTableName());
                 for (Map data : dataList) {
                     //替换关联字段
-                    for(Map.Entry<String,Map<String,String>> entry: sourceFieldMap.entrySet()){
+                    for (Map.Entry<String, Map<Object, Object>> entry : sourceFieldMap.entrySet()) {
                         String sourceFiledName = entry.getKey();
                         Object oldFieldValue = data.get(sourceFiledName);
-                        data.put(sourceFiledName,entry.getValue().get(oldFieldValue));
+                        data.put(sourceFiledName, entry.getValue().get(oldFieldValue));
                     }
                     List<RepField> repFields = table.getRepFields();
                     //替换指定字段
-                    if(CollectionUtil.isNotEmpty(repFields)){
+                    if (CollectionUtil.isNotEmpty(repFields)) {
                         for (RepField repField : repFields) {
+                            Map<String,Map<Object, Object>> tableFieldMap = fieldValueCorrespondingMap.get(table.getTableName());
+                            if(tableFieldMap == null){
+                                tableFieldMap = Maps.newHashMap();
+                                fieldValueCorrespondingMap.put(table.getTableName(),tableFieldMap);
+                            }
+                            Map fieldMap =  tableFieldMap.get(repField.getFieldName());
+                            if(fieldMap == null){
+                                tableFieldMap = Maps.newHashMap();
+                                tableFieldMap.put(repField.getFieldName(),fieldMap);
+                            }
                             String repStrategyBeanName = repField.getRepFieldStrategy();
                             RepFieldStrategy strategy = SpringUtil.getBean(repStrategyBeanName);
-                            if(strategy==null){
-                                throw new NotFoundRepStrategy(String.format("没有找到{}表{}字段的替换策略",table.getTableName(),repField.getFieldName()));
+                            if (strategy == null) {
+                                throw new NotFoundRepStrategy(String.format("没有找到%s表%s字段的替换策略",
+                                        table.getTableName(), repField.getFieldName()));
                             }
-                            data.put(repField.getFieldName(),strategy.get());
+                            //保存字段新旧值对应关系
+                            fieldMap.put(data.get(repField.getFieldName()),strategy.get());
+                            //替换字段值
+                            data.put(repField.getFieldName(), fieldMap.get(data.get(repField.getFieldName())));
                         }
                     }
                 }
@@ -74,19 +91,18 @@ public class RepFieldService {
             }
         } while (completedTableSet.size() < tables.getTables().size() && count != completedTableSet.size());
 
-        if(completedTableSet.size() != tables.getTables().size()){
+        if (completedTableSet.size() != tables.getTables().size()) {
             Set<String> tableNameSet = Sets.newHashSet();
             for (Table table : tables.getTables()) {
-                if (!completedTableSet.contains(table.getTableName())){
+                if (!completedTableSet.contains(table.getTableName())) {
                     tableNameSet.add(table.getTableName());
                 }
             }
-            throw new RepFieldValueException("{}表字段没有被替换", StringUtils.join(tableNameSet,","));
+            throw new RepFieldValueException("%s表字段没有被替换", StringUtils.join(tableNameSet, ","));
         }
     }
 
-    public boolean checkDependTableIsReplaced(Map<String, Map<String, Map<String, String>>> fieldValueCorrespondingMap,
-                                              List<DependTable> dependTables) {
+    public boolean checkDependTableIsReplaced(Map fieldValueCorrespondingMap, List<DependTable> dependTables) {
         for (DependTable dependTable : dependTables) {
             if (fieldValueCorrespondingMap.get(dependTable.getTableName()) == null) {
                 return false;
