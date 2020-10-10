@@ -8,6 +8,7 @@ import com.rep.core.mapper.DataReplicationMapper;
 import com.rep.core.parse.model.DependTable;
 import com.rep.core.parse.model.Table;
 import com.rep.core.parse.model.Tables;
+import com.rep.core.repository.DataOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 public class DataQuery {
 
     @Autowired
-    private DataReplicationMapper replicationMapper;
+    private DataOperation dataOperation;
 
     public Map<String, List<Map>> queryData(Map<String, Object> param, Tables tables) {
         List<Table> tableList = tables.getTables();
@@ -47,9 +48,9 @@ public class DataQuery {
                     }
                     if (paramValue instanceof Collection) {
                         List paramList = new ArrayList((Collection) paramValue);
-                        datas = replicationMapper.selectList(table.getTableName(), table.getQueryField(), paramList);
+                        datas = dataOperation.selectList(table.getTableName(), table.getQueryField(), paramList);
                     } else if (paramValue.getClass().isPrimitive() || paramValue instanceof String) {
-                        datas = replicationMapper.selectList(table.getTableName(), table.getQueryField(), Arrays.asList(paramValue));
+                        datas = dataOperation.selectList(table.getTableName(), table.getQueryField(), Arrays.asList(paramValue));
                     } else {
                         throw new ParamTypeException(String.format("参数类型只支持集合与基本类型，tableName：%s，paramName：%s", table.getTableName(), paramName));
                     }
@@ -61,7 +62,7 @@ public class DataQuery {
                         if (CollectionUtil.isNotEmpty(refDataList)) {
                             String targetField = dependTable.getTargetField();
                             List<Object> refFieldList = refDataList.stream().map(m -> m.get(targetField)).collect(Collectors.toList());
-                            datas = replicationMapper.selectList(table.getTableName(), dependTable.getSourceField(), refFieldList);
+                            datas = dataOperation.selectList(table.getTableName(), dependTable.getSourceField(), refFieldList);
                         } else {
                             continue;
                         }

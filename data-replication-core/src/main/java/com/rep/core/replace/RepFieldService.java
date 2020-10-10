@@ -1,4 +1,4 @@
-package com.rep.core.rep;
+package com.rep.core.replace;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.extra.spring.SpringUtil;

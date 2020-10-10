@@ -1,15 +1,14 @@
 package com.rep.core;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import com.google.common.base.CaseFormat;
 import com.rep.core.parse.ReplicationParse;
+import com.rep.core.parse.model.Tables;
 import com.rep.core.query.DataQuery;
-import com.rep.core.rep.RepFieldService;
+import com.rep.core.replace.CustomRepField;
+import com.rep.core.replace.RepFieldService;
+import com.rep.core.repository.DataOperation;
+import com.rep.core.sql.CreateInsertSql;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +27,13 @@ public class DataReplication {
     private DataQuery dataQuery;
     @Autowired
     private RepFieldService repFieldService;
+    @Autowired(required = false)
+    private CustomRepField customRepField;
+    @Autowired
+    private CreateInsertSql createInsertSql;
+    @Autowired
+    private DataOperation dataOperation;
+
 
     public DataReplication(ReplicationParse parse) {
         this.parse = parse;
@@ -35,58 +41,27 @@ public class DataReplication {
 
     /**
      * 数据复制，替换表之间关联字段数据
-     *
      * @param param
      * @auther wangye
      * @date 2020/9/29
      */
-    public void copy(Map<String, Object> param) {
-//
-//      SqlHelper.table(Object).getCurrentNamespace()
+    public void copy(Map<String, Object> param) throws ClassNotFoundException {
         //查询要复制的数据
-        Map<String, List<Map>> dataMap = dataQuery.queryData(param, parse.tables);
+        Tables tables = parse.tables;
+        Map<String, List<Map>> dataMap = dataQuery.queryData(param, tables);
         //替换关联关系字段并根据配置策略替换指定字段
-        repFieldService.replace(dataMap, parse.tables);
-        //TODO 对外开发接口个性化修改数据
-        //TODO 生成insert语句
-        //TODO 保存数据
-
-
+        repFieldService.replace(dataMap, tables);
+        //对外开发接口自定义修改数据
+        if (customRepField != null) {
+            customRepField.replace(dataMap);
+        }
+        //生成insert语句
+        List<String> insertSql = createInsertSql.createInsertSql(dataMap, tables);
+        //保存数据
+        for (String sql : insertSql) {
+            dataOperation.insert(sql);
+        }
     }
 
-    private String getBatchInsertSql(TableInfo tableInfo, Class<?> modelClass) {
-        String batchInsertSql = "INSERT INTO %s (%s) %s";
-        StringBuilder insertColumnBuilder = new StringBuilder();
-        StringBuilder itemColumnBuilder = new StringBuilder();
-        Field[] fields = modelClass.getDeclaredFields();
 
-
-        //添加column
-        for (int i = 0, len = fields.length; i < len; i++) {
-            Field field = fields[i];
-            //过滤静态变量
-            if (Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            //过滤注解说明非持久化列
-            TableField annotation = field.getAnnotation(TableField.class);
-            if (annotation != null && !annotation.exist()) {
-                continue;
-            }
-            String fieldName = field.getName();
-            insertColumnBuilder.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName)).append(",");
-            itemColumnBuilder.append("#{item." + fieldName + "},");
-        }
-        if (insertColumnBuilder.charAt(insertColumnBuilder.length() - 1) == ',') {
-            insertColumnBuilder.deleteCharAt(insertColumnBuilder.length() - 1);
-        }
-        if (itemColumnBuilder.charAt(itemColumnBuilder.length() - 1) == ',') {
-            itemColumnBuilder.deleteCharAt(itemColumnBuilder.length() - 1);
-        }
-        String foreachSql = "values" +
-                " <foreach collection=\"items\" item='item'  open='' index='index' separator=','>\n" +
-                "(%s)</foreach>";
-        foreachSql = String.format(foreachSql, itemColumnBuilder);
-        return String.format(batchInsertSql, tableInfo.getTableName(), insertColumnBuilder, foreachSql);
-    }
 }
