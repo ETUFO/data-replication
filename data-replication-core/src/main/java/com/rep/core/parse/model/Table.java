@@ -18,6 +18,9 @@ import java.util.List;
 public class Table implements Serializable {
 
     private static final long serialVersionUID = 8713956991962097670L;
+
+
+
     //设计模块对应的表名
     @XmlAttribute(name = "table-name")
     private String tableName;
@@ -41,6 +44,8 @@ public class Table implements Serializable {
     //当前模块所依赖的模块
     @XmlElement(name="rep-field")
     private List<RepField> repFields;
+
+
 
     @XmlTransient
     public String getTableName() {
@@ -87,6 +92,7 @@ public class Table implements Serializable {
     public List<RepField> getRepFields() {
         return repFields;
     }
+
 
     public void setRepFields(List<RepField> repFields) {
         this.repFields = repFields;

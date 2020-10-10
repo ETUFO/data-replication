@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
 import com.rep.core.parse.model.Table;
 import com.rep.core.parse.model.Tables;
@@ -64,6 +65,13 @@ public class MybtisPlusCreateInsertSql implements CreateInsertSql {
                 values = values == null ? Lists.newArrayList() : values;
 
                 Object value = dataList.get(j).get(fieldName);
+                if (value == null) {
+                    if (fieldName.contains("_")) {
+                        value = dataList.get(j).get(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, fieldName));
+                    } else {
+                        value = dataList.get(j).get(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName));
+                    }
+                }
                 if (value instanceof String) {
                     value = "'" + value + "'";
                 } else if (value == null) {
@@ -80,7 +88,7 @@ public class MybtisPlusCreateInsertSql implements CreateInsertSql {
             valueStrList.add(s.toString());
         }
 
-        String valueStr = " values "+StringUtils.join(valueStrList, ",") + ";";
+        String valueStr = " values " + StringUtils.join(valueStrList, ",") + ";";
 
         if (insertColumnBuilder.charAt(insertColumnBuilder.length() - 1) == ',') {
             insertColumnBuilder.deleteCharAt(insertColumnBuilder.length() - 1);

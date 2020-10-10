@@ -8,7 +8,6 @@ import java.util.Map;
 /**
  * 操作数据库
  * @classname: DataQuery
- * @description: TODO
  * @author: wangye
  * @date: 2020/10/10 13:40
  **/

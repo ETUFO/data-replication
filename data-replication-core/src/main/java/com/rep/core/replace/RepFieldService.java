@@ -9,10 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.rep.core.exception.NotFoundRepStrategy;
 import com.rep.core.exception.RepFieldValueException;
-import com.rep.core.parse.model.DependTable;
-import com.rep.core.parse.model.RepField;
-import com.rep.core.parse.model.Table;
-import com.rep.core.parse.model.Tables;
+import com.rep.core.parse.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +32,10 @@ public class RepFieldService {
         //{tableName:{fieldName:{oldValue:newValue}},.......}
         Map<String, Map<String, Map<Object, Object>>> fieldValueCorrespondingMap = Maps.newHashMap();
         Set<String> completedTableSet = Sets.newHashSetWithExpectedSize(tables.getTables().size());
+        Configuration configuration = tables.getConfiguration();
+        List<RepField> configRepFieldList = Optional.ofNullable(configuration.getRepFields())
+                .map(f->Optional.ofNullable(f.getRepFieldList()).orElse(Lists.newArrayList()))
+                .orElse(Lists.newArrayList());
         int count = 0;
         do {
             count = completedTableSet.size();
@@ -66,7 +67,8 @@ public class RepFieldService {
                         }
                         data.put(sourceFiledName, entry.getValue().get(oldFieldValue));
                     }
-                    List<RepField> repFields = table.getRepFields();
+                    List<RepField> repFields = Optional.ofNullable(table.getRepFields()).map(t->t).orElse(Lists.newArrayList());
+                    repFields.addAll(configRepFieldList);
                     //替换指定字段
                     if (CollectionUtil.isNotEmpty(repFields)) {
                         for (RepField repField : repFields) {

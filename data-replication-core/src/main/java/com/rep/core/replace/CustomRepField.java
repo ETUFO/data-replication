@@ -11,5 +11,7 @@ import java.util.Map;
  **/
 public interface CustomRepField {
 
-    void replace(Map<String, List<Map>> dataMap);
+    void beforeReplace(Map<String, List<Map>> dataMap);
+
+    void afterReplace(Map<String, List<Map>> dataMap);
 }

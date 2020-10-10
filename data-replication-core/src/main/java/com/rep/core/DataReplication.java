@@ -49,11 +49,15 @@ public class DataReplication {
         //查询要复制的数据
         Tables tables = parse.tables;
         Map<String, List<Map>> dataMap = dataQuery.queryData(param, tables);
+        //对外开发接口自定义修改数据
+        if (customRepField != null) {
+            customRepField.beforeReplace(dataMap);
+        }
         //替换关联关系字段并根据配置策略替换指定字段
         repFieldService.replace(dataMap, tables);
         //对外开发接口自定义修改数据
         if (customRepField != null) {
-            customRepField.replace(dataMap);
+            customRepField.afterReplace(dataMap);
         }
         //生成insert语句
         List<String> insertSql = createInsertSql.createInsertSql(dataMap, tables);

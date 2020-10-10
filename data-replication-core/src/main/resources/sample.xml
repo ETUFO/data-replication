@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
+    <!-- 全局配置 -->
+    <configuration>
+        <rep-fields>
+            <rep-field field-name=""  rep-field-strategy=""/>
+        </rep-fields>
+    </configuration>
 
     <!--
         table-name：表名

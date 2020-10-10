@@ -8,7 +8,6 @@ import java.util.Map;
 
 /**
  * @classname: DataReplicationMapper
- * @description: TODO
  * @author: wangye
  * @date: 2020/9/28 13:53
  **/
