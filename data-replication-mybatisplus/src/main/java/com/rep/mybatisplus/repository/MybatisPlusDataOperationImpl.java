@@ -1,7 +1,7 @@
-package com.rep.core.repository.impl;
+package com.rep.mybatisplus.repository;
 
-import com.rep.core.mapper.DataReplicationMapper;
 import com.rep.core.repository.DataOperation;
+import com.rep.mybatisplus.mapper.DataReplicationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.Map;
  * @date 2020/10/10 13:45
  **/
 @Component
-public class DataOperationImpl implements DataOperation {
+public class MybatisPlusDataOperationImpl implements DataOperation {
 
     @Autowired
     private DataReplicationMapper mapper;

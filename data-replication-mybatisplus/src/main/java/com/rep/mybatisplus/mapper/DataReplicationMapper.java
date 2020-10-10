@@ -1,4 +1,4 @@
-package com.rep.core.mapper;
+package com.rep.mybatisplus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,9 +15,9 @@ import java.util.Map;
 public interface DataReplicationMapper extends BaseMapper {
 
     List<Map> selectList(
-            @Param("tableName")String tableName,
-            @Param("paramName")String paramName,
-            @Param("paramList")List paramList);
+            @Param("tableName") String tableName,
+            @Param("paramName") String paramName,
+            @Param("paramList") List paramList);
 
     void batchInsert(String insertSql);
 }

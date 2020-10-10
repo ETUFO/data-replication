@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Maps;
 import com.rep.core.exception.NotConditionException;
 import com.rep.core.exception.ParamTypeException;
-import com.rep.core.mapper.DataReplicationMapper;
 import com.rep.core.parse.model.DependTable;
 import com.rep.core.parse.model.Table;
 import com.rep.core.parse.model.Tables;

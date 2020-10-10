@@ -1,4 +1,4 @@
-package com.rep.core.sql.impl;
+package com.rep.mybatisplus.sql;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;

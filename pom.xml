@@ -17,6 +17,7 @@
     <modules>
         <module>data-replication-boot-starter</module>
         <module>data-replication-core</module>
+        <module>data-replication-mybatisplus</module>
     </modules>
 
     <dependencies>
