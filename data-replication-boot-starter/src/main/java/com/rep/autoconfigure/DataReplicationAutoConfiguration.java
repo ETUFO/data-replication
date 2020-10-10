@@ -4,16 +4,18 @@ import com.rep.core.DataReplication;
 import com.rep.core.parse.ReplicationParse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 11
+ *
  * @author wangye
  * @classname DataReplicationAutoConfiguration
  * @date 2020/9/25 15:39
  **/
 @Configuration
 @EnableConfigurationProperties(DataReplicationProperties.class)
+@ComponentScan("com.rep")
 public class DataReplicationAutoConfiguration {
 
     DataReplicationProperties properties;

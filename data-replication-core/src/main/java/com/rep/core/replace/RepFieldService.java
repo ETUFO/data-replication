@@ -1,7 +1,6 @@
 package com.rep.core.replace;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
@@ -10,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.rep.core.exception.NotFoundRepStrategy;
 import com.rep.core.exception.RepFieldValueException;
 import com.rep.core.parse.model.*;
+import com.rep.core.util.SpringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
