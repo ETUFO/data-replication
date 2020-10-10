@@ -14,6 +14,8 @@
     <artifactId>data-replication</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
+
+
     <modules>
         <module>data-replication-boot-starter</module>
         <module>data-replication-core</module>
@@ -21,6 +23,19 @@
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>2.1.11.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

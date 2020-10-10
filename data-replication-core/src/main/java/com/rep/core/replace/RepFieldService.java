@@ -34,7 +34,7 @@ public class RepFieldService {
         Set<String> completedTableSet = Sets.newHashSetWithExpectedSize(tables.getTables().size());
         Configuration configuration = tables.getConfiguration();
         List<RepField> configRepFieldList = Optional.ofNullable(configuration.getRepFields())
-                .map(f->Optional.ofNullable(f.getRepFieldList()).orElse(Lists.newArrayList()))
+                .map(f -> Optional.ofNullable(f.getRepFieldList()).orElse(Lists.newArrayList()))
                 .orElse(Lists.newArrayList());
         int count = 0;
         do {
@@ -61,26 +61,26 @@ public class RepFieldService {
                     for (Map.Entry<String, Map<Object, Object>> entry : sourceFieldMap.entrySet()) {
                         String sourceFiledName = entry.getKey();
                         Object oldFieldValue = data.get(sourceFiledName);
-                        if(oldFieldValue == null){
+                        if (oldFieldValue == null) {
                             sourceFiledName = convertFieldName(sourceFiledName);
                             oldFieldValue = data.get(sourceFiledName);
                         }
                         data.put(sourceFiledName, entry.getValue().get(oldFieldValue));
                     }
-                    List<RepField> repFields = Optional.ofNullable(table.getRepFields()).map(t->t).orElse(Lists.newArrayList());
+                    List<RepField> repFields = Optional.ofNullable(table.getRepFields()).map(t -> t).orElse(Lists.newArrayList());
                     repFields.addAll(configRepFieldList);
                     //替换指定字段
                     if (CollectionUtil.isNotEmpty(repFields)) {
                         for (RepField repField : repFields) {
-                            Map<String,Map<Object, Object>> tableFieldMap = fieldValueCorrespondingMap.get(table.getTableName());
-                            if(tableFieldMap == null){
+                            Map<String, Map<Object, Object>> tableFieldMap = fieldValueCorrespondingMap.get(table.getTableName());
+                            if (tableFieldMap == null) {
                                 tableFieldMap = Maps.newHashMap();
-                                fieldValueCorrespondingMap.put(table.getTableName(),tableFieldMap);
+                                fieldValueCorrespondingMap.put(table.getTableName(), tableFieldMap);
                             }
-                            Map fieldMap =  tableFieldMap.get(repField.getFieldName());
-                            if(fieldMap == null){
+                            Map fieldMap = tableFieldMap.get(repField.getFieldName());
+                            if (fieldMap == null) {
                                 fieldMap = Maps.newHashMap();
-                                tableFieldMap.put(repField.getFieldName(),fieldMap);
+                                tableFieldMap.put(repField.getFieldName(), fieldMap);
                             }
                             String repStrategyBeanName = repField.getRepFieldStrategy();
                             RepFieldStrategy strategy = SpringUtil.getBean(repStrategyBeanName);
@@ -89,7 +89,7 @@ public class RepFieldService {
                                         table.getTableName(), repField.getFieldName()));
                             }
                             //保存字段新旧值对应关系
-                            fieldMap.put(data.get(repField.getFieldName()),strategy.get());
+                            fieldMap.put(data.get(repField.getFieldName()), strategy.get());
                             //替换字段值
                             data.put(repField.getFieldName(), fieldMap.get(data.get(repField.getFieldName())));
                         }
@@ -113,7 +113,7 @@ public class RepFieldService {
     private String convertFieldName(String sourceFiledName) {
         Converter<String, String> converter = sourceFiledName.contains("_")
                 ? CaseFormat.LOWER_UNDERSCORE.converterTo(CaseFormat.LOWER_CAMEL)
-                :CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
+                : CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
         sourceFiledName = converter.convert(sourceFiledName);
         return sourceFiledName;
     }
