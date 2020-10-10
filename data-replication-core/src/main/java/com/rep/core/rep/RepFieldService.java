@@ -2,6 +2,8 @@ package com.rep.core.rep;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -58,6 +60,10 @@ public class RepFieldService {
                     for (Map.Entry<String, Map<Object, Object>> entry : sourceFieldMap.entrySet()) {
                         String sourceFiledName = entry.getKey();
                         Object oldFieldValue = data.get(sourceFiledName);
+                        if(oldFieldValue == null){
+                            sourceFiledName = convertFieldName(sourceFiledName);
+                            oldFieldValue = data.get(sourceFiledName);
+                        }
                         data.put(sourceFiledName, entry.getValue().get(oldFieldValue));
                     }
                     List<RepField> repFields = table.getRepFields();
@@ -71,7 +77,7 @@ public class RepFieldService {
                             }
                             Map fieldMap =  tableFieldMap.get(repField.getFieldName());
                             if(fieldMap == null){
-                                tableFieldMap = Maps.newHashMap();
+                                fieldMap = Maps.newHashMap();
                                 tableFieldMap.put(repField.getFieldName(),fieldMap);
                             }
                             String repStrategyBeanName = repField.getRepFieldStrategy();
@@ -100,6 +106,14 @@ public class RepFieldService {
             }
             throw new RepFieldValueException("%s表字段没有被替换", StringUtils.join(tableNameSet, ","));
         }
+    }
+
+    private String convertFieldName(String sourceFiledName) {
+        Converter<String, String> converter = sourceFiledName.contains("_")
+                ? CaseFormat.LOWER_UNDERSCORE.converterTo(CaseFormat.LOWER_CAMEL)
+                :CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
+        sourceFiledName = converter.convert(sourceFiledName);
+        return sourceFiledName;
     }
 
     public boolean checkDependTableIsReplaced(Map fieldValueCorrespondingMap, List<DependTable> dependTables) {
