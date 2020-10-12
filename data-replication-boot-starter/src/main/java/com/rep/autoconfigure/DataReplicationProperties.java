@@ -1,6 +1,6 @@
 package com.rep.autoconfigure;
 
-import com.baomidou.mybatisplus.core.toolkit.Constants;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;

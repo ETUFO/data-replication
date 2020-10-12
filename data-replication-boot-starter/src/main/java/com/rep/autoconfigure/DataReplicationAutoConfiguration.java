@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration
 @EnableConfigurationProperties(DataReplicationProperties.class)
-@ComponentScan("com.rep")
+@ComponentScan({"com.rep","cn.hutool"})
 public class DataReplicationAutoConfiguration {
 
     DataReplicationProperties properties;
