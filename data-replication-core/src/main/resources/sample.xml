@@ -12,9 +12,8 @@
         query-field：获取数据查询的字段，非必填属性，默认为id
         param-name：用于查询数据对应的参数名称，不填写此属性会通过关联表查询数据，
                     如果关联多个表则使用配置顺序第一个关联表的关联字段作为条件进行查询
-        entity-class：表对应实体类全路径，非必填项,不填写则需要实现TableConvertEntity接口
     -->
-    <table table-name="cids_course" query-field="id" param-name="course-id" entity-class=""/>
+    <table table-name="cids_course" query-field="id" param-name="course-id"/>
 
 
     <table table-name="cids_course_team">
