@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author wangye
@@ -40,7 +41,6 @@ public class MybtisPlusCreateInsertSql implements CreateInsertSql {
     }
 
     private String getBatchInsertSql(TableInfo tableInfo, Class<?> modelClass, List<Map> dataList) {
-        List<Field> allFields = TableInfoHelper.getAllFields(modelClass);
 
         String batchInsertSql = "INSERT INTO %s (%s) %s";
         StringBuilder insertColumnBuilder = new StringBuilder();
@@ -67,15 +67,8 @@ public class MybtisPlusCreateInsertSql implements CreateInsertSql {
             for (int j = 0; j < dataList.size(); j++) {
                 List values = valueList.get(j);
                 values = values == null ? Lists.newArrayList() : values;
-
+                fieldName = convertFieldName(tableInfo, fieldName);
                 Object value = dataList.get(j).get(fieldName);
-                if (value == null) {
-                    if (fieldName.contains("_")) {
-                        value = dataList.get(j).get(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, fieldName));
-                    } else {
-                        value = dataList.get(j).get(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName));
-                    }
-                }
                 if (value instanceof String) {
                     value = "'" + value + "'";
                 } else if (value == null) {
@@ -100,4 +93,13 @@ public class MybtisPlusCreateInsertSql implements CreateInsertSql {
 
         return String.format(batchInsertSql, tableInfo.getTableName(), insertColumnBuilder, valueStr);
     }
+
+    private String convertFieldName(TableInfo tableInfo, String fieldName) {
+        boolean mapUnderscoreToCamelCase = tableInfo.getConfiguration().isMapUnderscoreToCamelCase();
+        if (!mapUnderscoreToCamelCase) {
+            return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
+        }
+        return fieldName;
+    }
+
 }

@@ -1,7 +1,9 @@
 package com.rep.core.query;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.Maps;
+import com.rep.core.config.TableConfiguration;
 import com.rep.core.exception.NotConditionException;
 import com.rep.core.exception.ParamTypeException;
 import com.rep.core.parse.model.DependTable;
@@ -29,6 +31,8 @@ public class DataQuery {
 
     @Autowired
     private DataOperation dataOperation;
+    @Autowired
+    private TableConfiguration tableConfiguration;
 
     public Map<String, List<Map>> queryData(Map<String, Object> param, Tables tables) {
         List<Table> tableList = tables.getTables();
@@ -59,7 +63,7 @@ public class DataQuery {
                         DependTable dependTable = dependTables.get(0);
                         List<Map> refDataList = dataContainer.get(dependTable.getTableName());
                         if (CollectionUtil.isNotEmpty(refDataList)) {
-                            String targetField = dependTable.getTargetField();
+                            String targetField = convertFormatTargetField(dependTable.getTargetField());
                             List<Object> refFieldList = refDataList.stream().map(m -> m.get(targetField)).collect(Collectors.toList());
                             datas = dataOperation.selectList(table.getTableName(), dependTable.getSourceField(), refFieldList);
                         } else {
@@ -80,5 +84,14 @@ public class DataQuery {
 
         } while (completedCount < tableList.size() && oldCompletedCount != completedCount);
         return dataContainer;
+    }
+
+    private String convertFormatTargetField(String targetField) {
+        if(targetField.contains("_") && tableConfiguration.isMapUnderscoreToCamelCase){
+            targetField = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL,targetField);
+        }else if(!targetField.contains("_") && !tableConfiguration.isMapUnderscoreToCamelCase){
+            targetField = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,targetField);
+        }
+        return targetField;
     }
 }
