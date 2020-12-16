@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 操作数据库123
+ * 操作数据库
  *
  * @classname: DataQuery
  * @author: wangye
